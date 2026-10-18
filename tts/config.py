@@ -8,7 +8,7 @@ FMAX = 8000           # highest pitch we care about. Speech has little above thi
 REF_DB = 20.0         # used when we squeeze loudness into a small range (see audio.py)
 MIN_DB = -100.0       # anything quieter than this counts as silence
 
-GL_ITERS = 60         # settings for turning the grid back into sound
+GL_ITERS = 200         # settings for turning the grid back into sound
 GL_POWER = 1.3
 
 MAX_MEL_FRAMES = 900  # skip clips longer than this (our longest is ~870, so none are skipped)
