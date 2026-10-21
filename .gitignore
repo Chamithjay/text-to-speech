@@ -1,5 +1,10 @@
-.venv
-data
-checkpoints
-samples
+.venv/
+data/
+checkpoints/
+samples/
+pretrained_models/
 __pycache__/
+.ruff_cache/
+*.pt
+*.ckpt
+*.wav
