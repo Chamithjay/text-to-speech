@@ -11,6 +11,7 @@ text -> encoder -> attention + decoder -> mel spectrogram -> HiFi-GAN -> audio
 **Text processing.** Input text is lowercased and cleaned, numbers are spelled out ("3" becomes "three"), and the result is converted to character IDs from a set of 37 symbols. Long text is split into sentences, each sentence is synthesised separately, and the pieces are joined with short pauses.
 
 **Acoustic model.** A Tacotron-2-style model with 7.6M parameters:
+
 - a character encoder (embedding, three convolution layers, bidirectional LSTM)
 - location-sensitive attention, which decides which character to read at each moment
 - an LSTM decoder with a pre-net, which predicts two mel frames per step, plus a stop-token head that decides when the sentence is finished
@@ -31,16 +32,26 @@ It predicts an 80-band mel spectrogram (22,050 Hz audio, 1024-point FFT, 256-sam
 - **Optimiser:** Adam, learning rate 1e-3 until step 15,000 and then halved every 15,000 steps, with gradient clipping at 1.0.
 - **Monitoring:** every 1,000 steps the training loop synthesises a fixed sentence and saves its attention plot and mel. The attention plot is the main check: a clean diagonal line means the model has learned to read the text in order.
 
+## Run it
+
+Install the requirements, download `latest.pt` from the [Releases page](../../releases) into a `checkpoints/` folder, then run:
+
+    pip install -r requirements.txt
+    python synthesize.py --text "Hello, this is my own text to speech model." --out hello.wav
+    python app.py
+
+The first run downloads the HiFi-GAN weights automatically.
+
 ## Results
 
 Quality improved steadily with training:
 
-| Steps | Observation |
-|---|---|
+| Steps  | Observation                                                         |
+| ------ | ------------------------------------------------------------------- |
 | 10,000 | Clean attention diagonal. Words are correct but the audio is noisy. |
-| 20,000 | Much clearer, with a long pause in the middle of a sentence. |
-| 30,000 | The pause is gone and pacing is steady. |
-| 40,000 | Sharpest mel spectrogram and the clearest voice. |
+| 20,000 | Much clearer, with a long pause in the middle of a sentence.        |
+| 30,000 | The pause is gone and pacing is steady.                             |
+| 40,000 | Sharpest mel spectrogram and the clearest voice.                    |
 
 Replacing Griffin-Lim with the HiFi-GAN vocoder made the largest single improvement in how natural the audio sounds.
 
@@ -57,5 +68,3 @@ Replacing Griffin-Lim with the HiFi-GAN vocoder made the largest single improvem
 - Tachibana et al., [Efficiently Trainable Text-to-Speech System Based on Deep Convolutional Networks with Guided Attention](https://arxiv.org/abs/1710.08969)
 - Kong et al., [HiFi-GAN](https://arxiv.org/abs/2010.05646), and the pretrained [LJSpeech model from SpeechBrain](https://huggingface.co/speechbrain/tts-hifigan-ljspeech) (Apache-2.0)
 - [LJSpeech](https://keithito.com/LJ-Speech-Dataset/) by Keith Ito (public domain)
-
-
